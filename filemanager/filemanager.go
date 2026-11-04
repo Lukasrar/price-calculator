@@ -20,14 +20,21 @@ func (fm FileManager) WriteResult(data any) error {
 		return errors.New("Error while creating file")
 	}
 
+	// since we know we have a file we call defer file.Close()
+	// defer runs when the surround function (WriteResult) is complete
+	defer file.Close()
+
 	time.Sleep(3 * time.Second)
 
 	encoder := json.NewEncoder(file)
 	errorEnc := encoder.Encode(data)
 
 	if errorEnc != nil {
+		// file.Close()
+
 		return errors.New("Failed to convert data to json")
 	}
+	// file.Close()
 
 	return nil
 }
@@ -37,9 +44,13 @@ func (fm FileManager) ReadLines() ([]string, error) {
 	file, error := os.Open(fm.InputFilePath)
 
 	if error != nil {
-		file.Close()
+		// file.Close()
 		return nil, errors.New("Error while opening file")
 	}
+
+	// since we know we have a file we call defer file.Close()
+	// defer runs when the surround function (Readlines) is complete
+	defer file.Close()
 
 	var lines []string
 
@@ -52,10 +63,10 @@ func (fm FileManager) ReadLines() ([]string, error) {
 	err := scanner.Err()
 
 	if err != nil {
-		file.Close()
+		// file.Close()
 		return nil, errors.New("Error while scaning file")
 	}
-	file.Close()
+	// file.Close()
 	return lines, nil
 
 }
